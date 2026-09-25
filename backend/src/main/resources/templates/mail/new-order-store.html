@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:dir="${dir}" th:lang="${#locale.language}">
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;background:#fbf8f5;font-family:Tahoma,Arial,sans-serif;color:#2a1a17;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:24px 12px;">
+  <tr><td align="center">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border:1px solid #e8ddd4;border-radius:16px;">
+      <tr><td th:style="'padding:24px;text-align:' + ${align}">
+        <h1 style="margin:0 0 12px;font-size:20px;" th:text="#{mail.store.heading}">New order</h1>
+        <p style="margin:0 0 6px;"><strong th:text="#{mail.orderNumber}">Order</strong>: <span dir="ltr" th:text="${orderNumber}">VR-1</span></p>
+        <p style="margin:0 0 6px;"><strong th:text="#{mail.store.customer}">Customer</strong>: <span th:text="${customerName}">Name</span> (<span dir="ltr" th:text="${customerEmail}">e</span>)</p>
+        <p style="margin:0 0 6px;"><strong th:text="#{mail.total}">Total</strong>: <span th:text="${total}">1</span></p>
+        <p style="margin:0 0 16px;color:#7a6660;"><span th:text="${recipientName}">Name</span> · <span dir="ltr" th:text="${phone}">010</span> · <span th:text="${address}">Address</span></p>
+        <ul style="margin:0 0 16px;padding:0 18px;color:#2a1a17;">
+          <li th:each="item : ${items}"><span th:text="${item.name}">Dress</span> — <span th:text="${item.variant}">Black · M</span> × <span th:text="${item.quantity}">1</span></li>
+        </ul>
+        <a th:href="${adminUrl}" style="display:inline-block;background:#4a2420;color:#fbf3ec;text-decoration:none;padding:10px 20px;border-radius:999px;font-weight:bold;" th:text="#{mail.store.open}">Open orders</a>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>

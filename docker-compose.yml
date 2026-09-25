@@ -1,0 +1,82 @@
+# Full stack in one command:  docker compose up --build
+#   Store:    http://localhost:3001
+#   API:      http://localhost:8081  (Swagger: /swagger-ui.html)
+#   Database: localhost:5434  (root / root, db "verona")
+# Host ports are offset from the defaults so the stack can run beside a local dev setup.
+
+name: verona
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: verona
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5434:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d verona"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    environment:
+      VERONA_DB_URL: jdbc:postgresql://db:5432/verona
+      VERONA_DB_USERNAME: root
+      VERONA_DB_PASSWORD: root
+      # Dev default only. Set VERONA_JWT_SECRET in a .env file for anything public.
+      VERONA_JWT_SECRET: ${VERONA_JWT_SECRET:-dmVyb25hLWRvY2tlci1kZXZlbG9wbWVudC1zZWNyZXQta2V5LWNoYW5nZS1tZS0yMDI2}
+      VERONA_ADMIN_EMAIL: ${VERONA_ADMIN_EMAIL:-admin@verona.com}
+      VERONA_ADMIN_PASSWORD: ${VERONA_ADMIN_PASSWORD:-Admin@12345}
+      VERONA_CORS_ORIGINS: http://localhost:3001
+      VERONA_STOREFRONT_URL: http://localhost:3001
+      VERONA_PUBLIC_API_URL: http://localhost:8081
+      # E-mails go to Mailpit (inbox UI: http://localhost:8026); point VERONA_SMTP_* at a real server in production.
+      VERONA_MAIL_ENABLED: "true"
+      VERONA_SMTP_HOST: mailpit
+      VERONA_SMTP_PORT: "1025"
+      # Online payment stays hidden until real Paymob keys are set here and the owner enables it in Settings.
+      VERONA_CARD_PROVIDER: ${VERONA_CARD_PROVIDER:-none}
+      VERONA_PAYMOB_SECRET_KEY: ${VERONA_PAYMOB_SECRET_KEY:-}
+      VERONA_PAYMOB_PUBLIC_KEY: ${VERONA_PAYMOB_PUBLIC_KEY:-}
+      VERONA_PAYMOB_HMAC_SECRET: ${VERONA_PAYMOB_HMAC_SECRET:-}
+      VERONA_PAYMOB_INTEGRATION_IDS: ${VERONA_PAYMOB_INTEGRATION_IDS:-}
+    volumes:
+      # Uploaded product images survive rebuilds and restarts.
+      - media-data:/app/uploads
+    ports:
+      - "8081:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "8026:8025"   # inbox UI
+      - "1026:1025"   # SMTP, for a backend running outside Docker
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    environment:
+      # Server-side calls stay on the internal Docker network; the browser only ever talks to the frontend.
+      BACKEND_URL: http://backend:8080
+      SITE_URL: http://localhost:3001
+    ports:
+      - "3001:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  db-data:
+  media-data:

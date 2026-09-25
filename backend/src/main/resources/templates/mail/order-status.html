@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:dir="${dir}" th:lang="${#locale.language}">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head>
+<body style="margin:0;background:#fbf8f5;font-family:Tahoma,Arial,sans-serif;color:#2a1a17;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fbf8f5;padding:24px 12px;">
+  <tr><td align="center">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border:1px solid #e8ddd4;border-radius:16px;overflow:hidden;">
+      <tr><td style="background:#4a2420;color:#fbf3ec;padding:20px 24px;font-size:22px;font-weight:bold;" th:style="'background:#4a2420;color:#fbf3ec;padding:20px 24px;font-size:22px;font-weight:bold;text-align:' + ${align}" th:text="${brand}">VIRONAI</td></tr>
+      <tr><td th:style="'padding:24px;text-align:' + ${align}">
+        <h1 style="margin:0 0 8px;font-size:22px;" th:text="#{'mail.heading.' + ${status}}">Heading</h1>
+        <p style="margin:0 0 4px;" th:text="#{mail.greeting(${recipientName})}">Hello</p>
+        <p style="margin:0 0 16px;color:#7a6660;line-height:1.6;"
+           th:text="${status == 'PENDING' and paidOnline} ? #{mail.body.PENDING.paid} : #{'mail.body.' + ${status}}">Body</p>
+        <p style="margin:0 0 16px;"><strong th:text="#{mail.orderNumber}">Order</strong>: <span dir="ltr" th:text="${orderNumber}">VR-1</span></p>
+        <p th:if="${statusNote}" style="margin:0 0 16px;padding:10px 12px;background:#f4eee8;border-radius:10px;">
+          <strong th:text="#{mail.note}">Note</strong>: <span th:text="${statusNote}">note</span></p>
+
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #e8ddd4;margin-top:8px;">
+          <tr th:each="item : ${items}">
+            <td th:style="'padding:10px 0;border-bottom:1px solid #f0e8e1;text-align:' + ${align}">
+              <div style="font-weight:bold;" th:text="${item.name}">Dress</div>
+              <div style="color:#7a6660;font-size:13px;"><span th:text="${item.variant}">Black · M</span> · <span th:text="#{mail.qty}">Qty</span> <span th:text="${item.quantity}">1</span></div>
+            </td>
+            <td style="padding:10px 0;border-bottom:1px solid #f0e8e1;white-space:nowrap;" th:style="'padding:10px 0;border-bottom:1px solid #f0e8e1;white-space:nowrap;text-align:' + (${dir} == 'rtl' ? 'left' : 'right')" th:text="${item.total}">100</td>
+          </tr>
+        </table>
+
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:12px;font-size:14px;">
+          <tr><td style="color:#7a6660;" th:text="#{mail.subtotal}">Subtotal</td><td th:style="'text-align:' + (${dir} == 'rtl' ? 'left' : 'right')" th:text="${subtotal}">1</td></tr>
+          <tr><td style="color:#7a6660;" th:text="#{mail.shipping}">Shipping</td><td th:style="'text-align:' + (${dir} == 'rtl' ? 'left' : 'right')" th:text="${shipping}">1</td></tr>
+          <tr><td style="font-weight:bold;font-size:16px;padding-top:6px;" th:text="#{mail.total}">Total</td><td th:style="'font-weight:bold;font-size:16px;padding-top:6px;text-align:' + (${dir} == 'rtl' ? 'left' : 'right')" th:text="${total}">1</td></tr>
+        </table>
+
+        <p style="margin:20px 0 4px;font-weight:bold;" th:text="#{mail.deliverTo}">Deliver to</p>
+        <p style="margin:0;color:#7a6660;line-height:1.6;"><span th:text="${recipientName}">Name</span> · <span dir="ltr" th:text="${phone}">010</span><br><span th:text="${address}">Address</span></p>
+
+        <p style="margin:24px 0 0;"><a th:href="${orderUrl}" style="display:inline-block;background:#4a2420;color:#fbf3ec;text-decoration:none;padding:12px 24px;border-radius:999px;font-weight:bold;" th:text="#{mail.viewOrder}">View order</a></p>
+      </td></tr>
+      <tr><td th:style="'padding:16px 24px;background:#f4eee8;color:#7a6660;font-size:12px;text-align:' + ${align}" th:text="#{mail.footer}">Footer</td></tr>
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>

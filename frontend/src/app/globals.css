@@ -1,0 +1,174 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens. Components only ever use the semantic names below (bg-surface, text-muted, bg-primary...).
+ * A theme = one palette block; mode = light/dark via the .dark class. Adding a theme = adding one block.
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Neutral surfaces shared by all palettes ------------------------------------------------------ */
+:root {
+  --bg: #fbf8f5;
+  --surface: #ffffff;
+  --surface-2: #f4eee8;
+  --fg: #2a1a17;
+  --muted: #7a6660;
+  --border: #e8ddd4;
+  --danger: #b42318;
+  --success: #2f7d4f;
+  --info: #2563a8;
+  --transit: #6d4bb3;
+  --shadow: 0 1px 2px rgb(42 26 23 / 0.06), 0 8px 24px rgb(42 26 23 / 0.06);
+  color-scheme: light;
+}
+
+:root.dark {
+  --bg: #16110f;
+  --surface: #1e1815;
+  --surface-2: #29211d;
+  --fg: #f3ebe4;
+  --muted: #b3a39a;
+  --border: #3a2f2a;
+  --danger: #f97066;
+  --success: #6bc58f;
+  --info: #7cb4ec;
+  --transit: #b59cf0;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px rgb(0 0 0 / 0.35);
+  color-scheme: dark;
+}
+
+/* Palettes ------------------------------------------------------------------------------------- */
+/* Bronze: taken from the logo (dark cocoa ink on a copper/sand disc). Default. */
+:root,
+:root[data-theme="bronze"] {
+  --primary: #4a2420;
+  --primary-fg: #fbf3ec;
+  --accent: #c89b7b;
+  --accent-soft: #f1e2d5;
+  --chart: #b5653c;
+}
+:root.dark,
+:root.dark[data-theme="bronze"] {
+  --primary: #d9b8a0;
+  --primary-fg: #2a1712;
+  --accent: #b9876a;
+  --accent-soft: #3a2a22;
+  --chart: #c97a50;
+}
+
+:root[data-theme="rose"] {
+  --primary: #8c3b52;
+  --primary-fg: #fff5f7;
+  --accent: #e0a3b1;
+  --accent-soft: #f8e6ea;
+  --chart: #b44a6a;
+}
+:root.dark[data-theme="rose"] {
+  --primary: #eab0bf;
+  --primary-fg: #3a1320;
+  --accent: #c47a8e;
+  --accent-soft: #3b2229;
+  --chart: #c47489;
+}
+
+:root[data-theme="olive"] {
+  --primary: #4f5530;
+  --primary-fg: #f7f6ee;
+  --accent: #a9a878;
+  --accent-soft: #ecebdc;
+  --chart: #7a8b2c;
+}
+:root.dark[data-theme="olive"] {
+  --primary: #c8c79a;
+  --primary-fg: #22240f;
+  --accent: #8d8c5c;
+  --accent-soft: #2e2f22;
+  --chart: #8a9a36;
+}
+
+:root[data-theme="noir"] {
+  --primary: #1c1c1c;
+  --primary-fg: #f7f5f2;
+  --accent: #b8a07e;
+  --accent-soft: #eee9e1;
+  --chart: #a67a2a;
+}
+:root.dark[data-theme="noir"] {
+  --primary: #efe8dc;
+  --primary-fg: #141414;
+  --accent: #b8a07e;
+  --accent-soft: #2b2824;
+  --chart: #b08a3a;
+}
+
+/* Tailwind bridge ------------------------------------------------------------------------------ */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-fg: var(--primary-fg);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  /* Data marks: brand hue at a lightness/chroma validated for charts (ink colours are too dark). */
+  --color-chart: var(--chart);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+  --color-info: var(--info);
+  --color-transit: var(--transit);
+  --shadow-card: var(--shadow);
+  --font-sans: var(--font-body-latin), var(--font-body-arabic), system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body-latin), var(--font-body-arabic), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--primary-fg);
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+  .heading-display {
+    font-family: var(--font-display), serif;
+    font-weight: 700;
+    @apply tracking-tight;
+  }
+}
+
+/* Off-canvas sheet: slides in from the inline-start edge, mirrored for RTL. */
+@keyframes sheet-in-ltr {
+  from { transform: translateX(-100%); }
+}
+@keyframes sheet-in-rtl {
+  from { transform: translateX(100%); }
+}
+.sheet-slide-in {
+  animation: sheet-in-ltr 0.22s ease-out;
+}
+[dir="rtl"] .sheet-slide-in {
+  animation-name: sheet-in-rtl;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sheet-slide-in {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}

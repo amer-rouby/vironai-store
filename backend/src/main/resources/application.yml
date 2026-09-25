@@ -1,0 +1,93 @@
+spring:
+  application:
+    name: verona-store
+  datasource:
+    url: ${VERONA_DB_URL:jdbc:postgresql://localhost:5432/verona}
+    username: ${VERONA_DB_USERNAME:root}
+    password: ${VERONA_DB_PASSWORD:root}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_batch_fetch_size: 50
+        jdbc.time_zone: UTC
+  jackson:
+    deserialization:
+      # Jackson 3 rejects omitted int/boolean fields by default; treat them as 0/false like Jackson 2 did.
+      fail-on-null-for-primitives: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  mail:
+    host: ${VERONA_SMTP_HOST:localhost}
+    port: ${VERONA_SMTP_PORT:1025}
+    username: ${VERONA_SMTP_USERNAME:}
+    password: ${VERONA_SMTP_PASSWORD:}
+    properties:
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 5000
+      mail.smtp.writetimeout: 5000
+  messages:
+    basename: i18n/mail
+    fallback-to-system-locale: false
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 25MB
+
+server:
+  port: ${VERONA_PORT:8080}
+  error:
+    include-stacktrace: never
+
+app:
+  security:
+    jwt:
+      # Override VERONA_JWT_SECRET in every non-local environment (min 32 bytes, base64).
+      secret: ${VERONA_JWT_SECRET:dmVyb25hLWxvY2FsLWRldmVsb3BtZW50LXNlY3JldC1rZXktY2hhbmdlLW1lLTIwMjY=}
+      expiration: ${VERONA_JWT_EXPIRATION:PT12H}
+    cors-allowed-origins: ${VERONA_CORS_ORIGINS:http://localhost:3000}
+  storefront:
+    # Where customers browse (links in e-mails, return URL after paying) and where the gateway can reach the API.
+    url: ${VERONA_STOREFRONT_URL:http://localhost:3000}
+    public-api-url: ${VERONA_PUBLIC_API_URL:http://localhost:8080}
+  payments:
+    card-provider: ${VERONA_CARD_PROVIDER:none}
+    payment-window: ${VERONA_PAYMENT_WINDOW:PT30M}
+    paymob:
+      api-base: ${VERONA_PAYMOB_API_BASE:https://accept.paymob.com}
+      secret-key: ${VERONA_PAYMOB_SECRET_KEY:}
+      public-key: ${VERONA_PAYMOB_PUBLIC_KEY:}
+      hmac-secret: ${VERONA_PAYMOB_HMAC_SECRET:}
+      integration-ids: ${VERONA_PAYMOB_INTEGRATION_IDS:}
+  mail:
+    enabled: ${VERONA_MAIL_ENABLED:false}
+    from: ${VERONA_MAIL_FROM:VIRONAI <no-reply@verona.local>}
+  media:
+    provider: ${VERONA_MEDIA_PROVIDER:local}
+    local-dir: ${VERONA_MEDIA_DIR:./uploads}
+  shipping:
+    free-threshold: 2000
+    zone-rates:
+      GREATER_CAIRO: 50
+      DELTA_CANAL: 65
+      UPPER_EGYPT: 80
+      REMOTE: 100
+  bootstrap-admin:
+    email: ${VERONA_ADMIN_EMAIL:admin@verona.com}
+    password: ${VERONA_ADMIN_PASSWORD:Admin@12345}
+    full-name: Verona Admin
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
